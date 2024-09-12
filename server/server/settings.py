@@ -30,6 +30,15 @@ CORS_ALLOW_CREDENTIALS =True
 CORS_ALLOWED_ORIGINS = [
     'https://healhealthtask.onrender.com',  # Your frontend URL
 ]
+CORS_ALLOWED_HEADERS=[
+    'content-type',
+    'x-requested-with',
+    'x-requested-from',  # Add your custom header here
+    'authorization',
+    'accept',
+    'origin',
+    'x-csrftoken',
+]
 ALLOWED_HOSTS = [
     'healhealthtask-backend-server.onrender.com',  # Your Python server URL
     'healhealthtask.onrender.com',  # Your frontend URL
