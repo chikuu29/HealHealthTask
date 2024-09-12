@@ -21,32 +21,15 @@
                 }
             },
             {
-                "id": "MYOMSSYSTEM",
+                "id": "MARKET_PLACE",
                 "hidden": true,
-                "name": "OMS SYSTEM",
+                "name": "MARKET PLACE",
                 "target": "/panel",
                 "actions": {
                     "onClick": ""
                 },
                 "logo": {
                     "url": "../assets/icons/rainbow-online-store.png",
-                    "style": {
-                        "mb": "4px",
-                        "boxSize": "150px",
-                        "objectFit": "contain"
-                    }
-                }
-            },
-            {
-                "id": "MY_GYM",
-                "hidden": true,
-                "name": "MY GYM",
-                "target": "/AdminModules",
-                "actions": {
-                    "onClick": ""
-                },
-                "logo": {
-                    "url": "../assets/icons/smart-gym-water-bottle-and-dumbbells-for-a-healthy-lifestyle.png",
                     "style": {
                         "mb": "4px",
                         "boxSize": "150px",

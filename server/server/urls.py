@@ -21,7 +21,8 @@ from db.mongo import db
 
 urlpatterns = [
 
-    path('auth/',include('Apis.urls'))
+    path('auth/',include('Apis.urls')),
+    path('app/',include('my_app.urls'))
     # path('admin/', admin.site.urls),
     #  path('auth/', include([
     #     path('auth/', include('Apis.urls'))

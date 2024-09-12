@@ -46,16 +46,12 @@ class RegisterAPIView(APIView):
         
 
 class LogoutView(APIView):
-    def post(self,request):
-        response = Response(
-            {
-            "message": "Loginout successful"
-            }, status=status.HTTP_200_OK )
+    def get(self,request):
+        response = Response({"success": True, "message": "Logged out successfully"}, status=status.HTTP_200_OK)
         response.delete_cookie(
-            key="jwt_token",
-             samesite= 'Lax',
+            key="refresh_token",
             path="/"
-            )
+        )
         return response
 
 
@@ -70,7 +66,7 @@ class LoginAPIView(APIView):
                 return Response({"error": "Please provide both email and password"}, status=status.HTTP_400_BAD_REQUEST)
 
             # Connect to MongoDB
-            collection = db['user']
+            collection = db['users']
 
             # Check if user exists
             storedData = collection.find_one({"email": email})
@@ -137,7 +133,7 @@ class checkLoginStatus(APIView):
            
             tokenData = validate_jwt_token(token,secreatKey)['payload']
             print(tokenData)
-            collection = db['user']
+            collection = db['users']
             # Check if user exists
             storedData = collection.find_one({"email": tokenData['email']})
             if tokenData and storedData:
