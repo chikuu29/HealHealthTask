@@ -27,7 +27,9 @@ DEBUG = True
 
 # settings.py
 CORS_ALLOW_CREDENTIALS =True
-CORS_ORIGIN_ALLOW_ALL =True
+CORS_ALLOWED_ORIGINS = [
+    'https://healhealthtask.onrender.com',  # Your frontend URL
+]
 ALLOWED_HOSTS = [
     'healhealthtask-backend-server.onrender.com',  # Your Python server URL
     'healhealthtask.onrender.com',  # Your frontend URL
