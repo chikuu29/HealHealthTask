@@ -56,7 +56,7 @@ const routes: RouteObject[] = [
     ],
   },
   {
-    path: "/panel/*",
+    path: "/marketplace/*",
     element: (
       <AuthProvider>
         <PrivateRoute children={<PanelLayout />}></PrivateRoute>
@@ -78,7 +78,7 @@ const routes: RouteObject[] = [
     ],
   },
   {
-    path: "/AdminModules/*",
+    path: "/listing/*",
     element: (
       <AuthProvider>
         <PrivateRoute children={<PanelLayout />}></PrivateRoute>

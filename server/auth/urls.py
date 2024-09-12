@@ -1,5 +1,5 @@
 from django.urls import path
-from Apis.userAuth import *
+from auth.userAuth import *
 # from Apis.jobResumeView import *
 
 

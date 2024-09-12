@@ -17,12 +17,15 @@ Including another URLconf
 # from django.contrib import admin
 from django.urls import path,include
 from db.mongo import db
+# from Apis import admin
+
 # from Apis.jobResumeView import *
 
 urlpatterns = [
-
-    path('auth/',include('Apis.urls')),
-    path('app/',include('my_app.urls'))
+#   path('admin/', admin.site.urls),
+    path('auth/',include('auth.urls')),
+    # path('app/',include('my_app.urls',namespace='my_app'))
+    path('apps/', include('my_app.urls')),
     # path('admin/', admin.site.urls),
     #  path('auth/', include([
     #     path('auth/', include('Apis.urls'))

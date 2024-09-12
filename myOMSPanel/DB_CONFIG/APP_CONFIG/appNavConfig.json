@@ -4,15 +4,15 @@
     "config": {
         "appList": [
             {
-                "id": "ADMIN_MODULES",
+                "id": "INVENTORY",
                 "hidden": true,
-                "name": "Admin Module",
-                "target": "/AdminModules",
+                "name": "MY INVENTORY",
+                "target": "/listing",
                 "actions": {
                     "onClick": ""
                 },
                 "logo": {
-                    "url": "../assets/icons/3d-casual-life-secure-document.png",
+                    "url": "../assets/icons/fogg-courier-standing-next-to-a-pile-of-boxes.png",
                     "style": {
                         "mb": "4px",
                         "boxSize": "150px",
@@ -24,7 +24,7 @@
                 "id": "MARKET_PLACE",
                 "hidden": true,
                 "name": "MARKET PLACE",
-                "target": "/panel",
+                "target": "/marketplace",
                 "actions": {
                     "onClick": ""
                 },
@@ -39,15 +39,15 @@
             }
         ],
         "featueListBaseOnURL": {
-            "myApps": {},
-            "panel": {
-                "SHOW_SIDE_NAV_MENU":true,
+            "marketplace": {},
+            "listing": {
+                "SHOW_SIDE_NAV_MENU":false,
                 "SHOW_TOP_NAV_MENU":true,
                 "MENU": [
                     {
                         "label": "Home",
                         "icon": "FcHome",
-                        "path": "/panel/home",
+                        "path": "/listing",
                         "isMaster": true
                     },
                     {
@@ -67,11 +67,6 @@
                             },
                             {
                                 "label": "Draft Product",
-                                "icon": "FiEdit",
-                                "path": "/panel/draftProduct"
-                            },
-                            {
-                                "label": "SURYANARAYAN BISWAL",
                                 "icon": "FiEdit",
                                 "path": "/panel/draftProduct"
                             }

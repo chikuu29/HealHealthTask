@@ -186,7 +186,7 @@ export default function signin() {
         me="auto"
         mb={{ base: "20px", md: "auto" }}
       >
-        <Button
+        {/* <Button
           fontSize="sm"
           me="0px"
           mb="26px"
@@ -202,14 +202,14 @@ export default function signin() {
         >
           <Icon as={FcGoogle} w="20px" h="20px" me="10px" />
           Sign in with Google
-        </Button>
-        <Flex align="center" mb="25px">
+        </Button> */}
+        {/* <Flex align="center" mb="25px">
           <HSeparator />
           <Text color="gray.400" mx="14px">
             or
           </Text>
           <HSeparator />
-        </Flex>
+        </Flex> */}
         <form onSubmit={handleSubmit}>
           <FormControl>
             <FormLabel
@@ -274,7 +274,7 @@ export default function signin() {
                 />
               </InputRightElement>
             </InputGroup>
-            <Flex justifyContent="space-between" align="center" mb="24px">
+            {/* <Flex justifyContent="space-between" align="center" mb="24px">
               <FormControl display="flex" alignItems="center">
                 <Checkbox
                   id="remember-login"
@@ -301,7 +301,7 @@ export default function signin() {
                   Forgot password?
                 </Text>
               </NavLink>
-            </Flex>
+            </Flex> */}
             {showAlert.isVisible && (
               <Alert
                 status={showAlert.status}
