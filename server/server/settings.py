@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-
+# Import CORS settings
+from corsheaders.defaults import default_headers
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,15 +31,10 @@ CORS_ALLOW_CREDENTIALS =True
 CORS_ALLOWED_ORIGINS = [
     'https://healhealthtask.onrender.com',  # Your frontend URL
 ]
-CORS_ALLOWED_HEADERS=[
-    'content-type',
-    'x-requested-with',
-    'x-requested-from',  # Add your custom header here
-    'authorization',
-    'accept',
-    'origin',
-    'x-csrftoken',
-]
+# Allow the 'x-requested-from' header
+CORS_ALLOW_HEADERS = default_headers + (
+    'x-requested-from',
+)
 ALLOWED_HOSTS = [
     'healhealthtask-backend-server.onrender.com',  # Your Python server URL
     'healhealthtask.onrender.com',  # Your frontend URL
@@ -68,7 +64,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
