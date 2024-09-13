@@ -10,6 +10,7 @@ import DashBoard from "./views/dashboard/DashBoard";
 import PrivateRoute from "./auth/PrivateRoute";
 import { AuthProvider } from "./auth/AuthProvider";
 import { MyApps } from "./views/myApps/MyApps";
+import AddProduct  from "./views/inventory/addProduct";
 
 
 
@@ -78,13 +79,22 @@ const routes: RouteObject[] = [
     ],
   },
   {
-    path: "/listing/*",
+    path: "/inventory/*",
     element: (
       <AuthProvider>
         <PrivateRoute children={<PanelLayout />}></PrivateRoute>
       </AuthProvider>
     ),
-    children: [],
+    children: [
+      {
+        path: "",
+        element: <MyApps />,
+      },
+      {
+        path: "addProduct",
+        element: <AddProduct />,
+      }
+    ],
   },
   {
     path: "/myApps",

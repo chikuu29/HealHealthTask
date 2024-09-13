@@ -7,7 +7,7 @@
                 "id": "INVENTORY",
                 "hidden": true,
                 "name": "MY INVENTORY",
-                "target": "/listing",
+                "target": "/inventory",
                 "actions": {
                     "onClick": ""
                 },
@@ -40,7 +40,7 @@
         ],
         "featueListBaseOnURL": {
             "marketplace": {},
-            "listing": {
+            "inventory": {
                 "SHOW_SIDE_NAV_MENU":false,
                 "SHOW_TOP_NAV_MENU":true,
                 "MENU": [
@@ -58,17 +58,17 @@
                             {
                                 "label": "List Product",
                                 "icon": "FcTodoList",
-                                "path": "/AdminModules"
+                                "path": ""
                             },
                             {
                                 "label": "Add Product",
                                 "icon": "FiShoppingCart",
-                                "path": "/panel/addProduct"
+                                "path": "/inventory/addProduct"
                             },
                             {
                                 "label": "Draft Product",
                                 "icon": "FiEdit",
-                                "path": "/panel/draftProduct"
+                                "path": "/draftProduct"
                             }
                         ]
                     }
