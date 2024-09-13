@@ -19,6 +19,7 @@ export const inputStyles = {
             borderRadius: "16px",
             fontSize: "sm",
             p: "20px",
+            mb:'5px',
             _placeholder: { color: "secondaryGray.400" },
           },
         }),

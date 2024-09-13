@@ -1,19 +1,18 @@
 from rest_framework import serializers
 
-class VariantSerializer(serializers.Serializer):
-    # _id = serializers.CharField(source='_id', required=False)
-    sku = serializers.CharField()
-    name = serializers.CharField()
-    price = serializers.FloatField()
-    special_price = serializers.FloatField()
-    attributes = serializers.DictField()  # Assuming attributes is a dictionary
+class ProductVariantSerializer(serializers.Serializer):
+    sku = serializers.CharField(max_length=255)
+    name = serializers.CharField(max_length=255)
+    price = serializers.IntegerField()  # Changed to IntegerField
+    special_price = serializers.IntegerField()  # Changed to IntegerField
+    image = serializers.ListField(child=serializers.URLField())
+    attributes = serializers.DictField()
 
 class ProductSerializer(serializers.Serializer):
-    # _id = serializers.CharField(source='_id', required=False)
-    sku = serializers.CharField()
-    name = serializers.CharField()
+    sku = serializers.CharField(max_length=255)
+    name = serializers.CharField(max_length=255)
     description = serializers.CharField()
     image = serializers.URLField()
-    price = serializers.FloatField()
-    special_price = serializers.FloatField()
-    variants = VariantSerializer(many=True, required=False)  # Optional field
+    price = serializers.IntegerField()  # Changed to IntegerField
+    special_price = serializers.IntegerField()  # Changed to IntegerField
+    variants = ProductVariantSerializer(many=True)

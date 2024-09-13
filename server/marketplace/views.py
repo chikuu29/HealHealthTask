@@ -40,51 +40,68 @@ class ProductView(APIView):
         except Exception as e:
             return Response({"message": f"An error occurred: {str(e)}", "success": False}, status=status.HTTP_400_BAD_REQUEST)
     
-    def post(self, request):
+class ProductView(APIView):
+    def get(self, request):
         try:
-            # Deserialize and validate incoming data
-            serializer = ProductSerializer(data=request.data)
-            if serializer.is_valid():
-                data = serializer.validated_data
-                
-                # Prepare data for MongoDB insertion
-                product_data = {
-                    'sku': data['sku'],
-                    'name': data['name'],
-                    'description': data['description'],
-                    'image': data['image'],
-                    'price': data['price'],
-                    'special_price': data['special_price'],
-                    'variants': data.get('variants', [])
+            # Access MongoDB collection
+            collection = db['products']
+        
+            # Fetch all products from the 'products' collection
+            products = collection.find({})
+            products = list(products)
+            
+            # Convert ObjectId to string for JSON serialization
+            for product in products:
+                product['_id'] = str(product['_id'])
+                # Convert nested ObjectId for variants
+                # if 'variants' in product:
+                #     for variant in product['variants']:
+                #         variant['_id'] = str(variant['_id'])
+            
+            # Serialize the data
+            serializer = ProductSerializer(products, many=True)
+            
+            if products:
+                response = {
+                    "success": True,
+                    "result": serializer.data
                 }
-
-                # Generate a new ObjectId for the product if not provided
-                product_data['_id'] = ObjectId()
-
-                # Access MongoDB collection and insert the product
-                collection = db['products']
-                result = collection.insert_one(product_data)
-                
-                # Check if the insertion was successful
-                if result.acknowledged:
-                    return Response({
-                        "success": True,
-                        "message": "Product created successfully",
-                        "product_id": str(product_data['_id'])
-                    }, status=status.HTTP_201_CREATED)
-                else:
-                    return Response({
-                        "success": False,
-                        "message": "Failed to create product"
-                    }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response(response, status=status.HTTP_200_OK)
             else:
                 return Response({
                     "success": False,
-                    "errors": serializer.errors
-                }, status=status.HTTP_400_BAD_REQUEST)
+                    "result": []
+                }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": f"An error occurred: {str(e)}", "success": False}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def post(self, request):
+        serializer = ProductSerializer(data=request.data)
+        print(f'API DATA',request.data)
+        
+        if serializer.is_valid():
+            # Process valid data (e.g., save to the database)
+            collection = db['products']
+            product_data = serializer.validated_data
+            result = collection.insert_one(product_data)
 
+            # Prepare success response
+            response_data = {
+                "success": True,
+                "message": "Product created successfully",
+                "product_id": str(result.inserted_id),
+                "product_data": serializer.data
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        else:
+            # Prepare error response
+            response_data = {
+                "success": False,
+                "message": "Product creation failed",
+                "errors": serializer.errors
+            }
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+        
 
 class AddVariantView(APIView):
     def post(self, request, product_id):
