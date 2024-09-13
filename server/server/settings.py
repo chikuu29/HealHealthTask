@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'gunicorn',
-    'my_app'
+    'my_app',
+    'marketplace'
 ]
 
 MIDDLEWARE = [
@@ -64,12 +65,12 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'django.middleware.common.CommonMiddleware',
+    'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'middleware.customMiddleware.UserValidationMiddleware'
+    # 'middleware.customMiddleware.UserValidationMiddleware'
   
 ]
 

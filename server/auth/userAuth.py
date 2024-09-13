@@ -49,7 +49,7 @@ class LogoutView(APIView):
     def get(self,request):
         response = Response({"success": True, "message": "Logged out successfully"}, status=status.HTTP_200_OK)
         response.delete_cookie(
-            key="refresh_token",
+            key="jwt_token",
             path="/"
         )
         return response
@@ -95,7 +95,7 @@ class LoginAPIView(APIView):
                 };
                     response = Response(message_info,status=status.HTTP_200_OK)
                     response.set_cookie(
-                            key='refresh_token',
+                            key='jwt_token',
                             value=str(token),
                             httponly=True,
                             samesite= 'None',
@@ -126,7 +126,7 @@ class checkLoginStatus(APIView):
             # Get data from request
             
 
-            token = request.COOKIES['refresh_token']
+            token = request.COOKIES['jwt_token']
          
             if not token:
                 return Response({"error": "Please provide token"}, status=status.HTTP_400_BAD_REQUEST)

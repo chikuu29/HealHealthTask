@@ -13,7 +13,7 @@ export const fetchAppConfig = createAsyncThunk(
 
       const response = await firstValueFrom(
         GETAPI({
-          path: 'apps/app-configurations',
+          path: 'app/app-configurations',
           isPrivateApi: true,
           enableCache: false,
         }).pipe(

@@ -25,7 +25,8 @@ urlpatterns = [
 #   path('admin/', admin.site.urls),
     path('auth/',include('auth.urls')),
     # path('app/',include('my_app.urls',namespace='my_app'))
-    path('apps/', include('my_app.urls')),
+    path('app/', include('my_app.urls')),
+    path('marketplace/',include('marketplace.urls'))
     # path('admin/', admin.site.urls),
     #  path('auth/', include([
     #     path('auth/', include('Apis.urls'))
