@@ -49,6 +49,7 @@ class LogoutView(APIView):
     def get(self,request):
         response = Response({"success": True, "message": "Logged out successfully"}, status=status.HTTP_200_OK)
         response.delete_cookie(
+            samesite= 'None',
             key="jwt_token",
             path="/"
         )
