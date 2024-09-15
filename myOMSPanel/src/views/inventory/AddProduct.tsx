@@ -32,7 +32,7 @@ import {
   Icon,
   Stack,
 } from "@chakra-ui/react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import * as dynamicFunctions from "../../script/myAppsScript";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -53,13 +53,15 @@ import {
 import { MdDelete } from "react-icons/md";
 
 const AddProduct = () => {
-  const { sku } = useParams();
+  const { sku, ...rest } = useParams();
+  const { pathname } = useLocation();
+
   useEffect(() => {
     const fetchProduct = () => {
       GETAPI({
         path: "marketplace/product/" + sku,
         isPrivateApi: true,
-        enableCache: true,
+        enableCache: false,
         cacheTTL: 300,
       }).subscribe(
         (res) => {
@@ -67,7 +69,14 @@ const AddProduct = () => {
 
           if (res.success) {
             setProduct(res.result); // Assuming `result` contains the product object
-            setMode("EDIT");
+            // console.log("hii",rest['*']);
+            console.log(pathname);
+
+            if (pathname.includes("view")) {
+              setMode("VIEW_ONLY");
+            } else if (pathname.includes("edit")) {
+              setMode("EDIT");
+            }
           } else {
             setMode("NEW");
             // setError('Product not found');
@@ -84,10 +93,10 @@ const AddProduct = () => {
       );
     };
 
-    fetchProduct();
-  }, [sku]);
+    if (sku) fetchProduct();
+  }, [sku,pathname]);
 
-  const [mode, setMode] = useState<"EDIT" | "NEW">("NEW");
+  const [mode, setMode] = useState<"EDIT" | "NEW" | "VIEW_ONLY">("NEW");
 
   // Initialize the state with the correct structure
   const [product, setProduct] = useState<Product>({
@@ -152,11 +161,120 @@ const AddProduct = () => {
       setProduct({ ...product, variants: updatedVariants });
     }
   };
+
+  // Configuration object to define which fields are required
+  const config = {
+    sku: true,
+    name: true,
+    description: true,
+    image: true,
+    price: true,
+    special_price: true,
+    variants: true,
+    variantSku: true,
+    variantName: true,
+    variantPrice: true,
+    variantSpecialPrice: true,
+    variantImage: true,
+    variantColor: true,
+    variantSize: true,
+  };
+
+  const showErrors = (errors: string[]) => {
+    // const toast = useToast();
+    errors.forEach((error) => {
+      toast({
+        title: "Validation Error",
+        description: error,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    });
+  };
+  const validateForm = (formData: Product, config: any) => {
+    const errors = [];
+    const { sku, name, description, image, price, special_price, variants } =
+      formData;
+
+    // Check the main fields
+    if (config.sku && !sku) {
+      errors.push("SKU is required.");
+    }
+    if (config.name && !name) {
+      errors.push("Name is required.");
+    }
+
+    if (config.description && !description) {
+      errors.push("Description is required.");
+    }
+
+    if (config.image && !image) {
+      errors.push("Image URL is required.");
+    }
+
+    if (config.price && price <= 0) {
+      errors.push("Price must be greater than 0.");
+    }
+
+    if (config.special_price && special_price <= 0) {
+      errors.push("Special price must be greater than 0.");
+    }
+
+    // Check variants if defined
+    if (config.variants && Array.isArray(variants)) {
+      for (let i = 0; i < variants.length; i++) {
+        const { sku, name, price, special_price, image, attributes } =
+          variants[i];
+
+        if (config.variantSku && !sku) {
+          errors.push(`Variant SKU is required (Variant ${i + 1}).`);
+        }
+
+        if (config.variantName && !name) {
+          errors.push(`Variant name is required (Variant ${i + 1}).`);
+        }
+
+        if (config.variantPrice && price <= 0) {
+          errors.push(
+            `Variant price must be greater than 0 (Variant ${i + 1}).`
+          );
+        }
+
+        if (config.variantSpecialPrice && special_price <= 0) {
+          errors.push(
+            `Variant special price must be greater than 0 (Variant ${i + 1}).`
+          );
+        }
+
+        if (config.variantImage && image.length === 0) {
+          errors.push(`Variant image is required (Variant ${i + 1}).`);
+        }
+
+        if (config.variantColor && !attributes.color) {
+          errors.push(`Variant color is required (Variant ${i + 1}).`);
+        }
+
+        if (config.variantSize && !attributes.size) {
+          errors.push(`Variant size is required (Variant ${i + 1}).`);
+        }
+      }
+    }
+
+    if (variants.length == 0) {
+      console.log("hii");
+
+      errors.push("Please Select Atleast One Variant of the product");
+    }
+
+    // Return the array of error messages. If empty, the form is valid.
+    return errors;
+  };
   const handleSubmit = (e: any) => {
     e.preventDefault();
     // Add your submit logic here, e.g., sending data to the server
-
     product.variants.map((i: ProductVariant) => {
+      i.image = i.image.filter((img: string) => img !== "");
       i.sku = generateSKU(product.sku, i.attributes.color, i.attributes.size);
       i.name =
         product.name +
@@ -165,46 +283,50 @@ const AddProduct = () => {
         ", Size " +
         i.attributes.size;
     });
-    console.log("Product Data:", product);
-    dispatch(startLoading("Your Order Is Creating, please wait..."));
-
-    POSTAPI({
-      path: "marketplace/products",
-      data: product,
-      isPrivateApi: true,
-      enableCache: false,
-    }).subscribe((res: any) => {
-      dispatch(stopLoading());
-      if (res.success) {
-        if (!res.message.includes("updated")) {
-          setProduct({
-            sku: "",
-            name: "",
-            description: "",
-            image: "",
-            price: 0,
-            special_price: 0,
-            variants: [],
+    const errors = validateForm(product, config);
+    if (errors.length > 0) {
+      showErrors(errors);
+      console.log("error", errors);
+    } else {
+      dispatch(startLoading("Your Order Is Creating, please wait..."));
+      POSTAPI({
+        path: "marketplace/products",
+        data: product,
+        isPrivateApi: true,
+        enableCache: false,
+      }).subscribe((res: any) => {
+        dispatch(stopLoading());
+        if (res.success) {
+          if (!res.message.includes("updated")) {
+            setProduct({
+              sku: "",
+              name: "",
+              description: "",
+              image: "",
+              price: 0,
+              special_price: 0,
+              variants: [],
+            });
+          }
+          toast({
+            title: res.message,
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            // position: "top" // This will position the toast at the top of the screen
+          });
+        } else {
+          toast({
+            title: res.message,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            // position: "top" // This will position the toast at the top of the screen
           });
         }
-        toast({
-          title: res.message,
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-          // position: "top" // This will position the toast at the top of the screen
-        });
-      } else {
-        toast({
-          title: res.message,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          // position: "top" // This will position the toast at the top of the screen
-        });
-      }
-      console.log("res");
-    });
+        console.log("res");
+      });
+    }
   };
 
   return (
@@ -290,7 +412,7 @@ const AddProduct = () => {
                 <Input
                   required={true}
                   variant={"main"}
-                  type="number"
+                  type="text"
                   name="price"
                   value={product.price}
                   onChange={handleInputChange}
@@ -302,7 +424,7 @@ const AddProduct = () => {
                 <FormLabel>Special Price</FormLabel>
                 <Input
                   required={true}
-                  type="number"
+                  type="text"
                   name="special_price"
                   variant={"main"}
                   value={product.special_price}
@@ -393,7 +515,7 @@ const AddProduct = () => {
                           <Input
                             required={true}
                             variant={"main"}
-                            type="number"
+                            type="text"
                             name="price"
                             value={variant.price}
                             onChange={(e) =>
@@ -407,7 +529,7 @@ const AddProduct = () => {
                           <FormLabel>Special Price</FormLabel>
                           <Input
                             required={true}
-                            type="number"
+                            type="text"
                             name="special_price"
                             variant={"main"}
                             value={variant.special_price}
@@ -449,6 +571,7 @@ const AddProduct = () => {
                               </FormControl>
                             ))}
                             <Button
+                              isDisabled={["VIEW_ONLY"].includes(mode)}
                               colorScheme="blue"
                               onClick={() => {
                                 const updatedVariants = [...product.variants];
@@ -496,6 +619,7 @@ const AddProduct = () => {
 
                 <Button
                   // colorScheme="blue"
+                  isDisabled={["VIEW_ONLY"].includes(mode)}
                   variant={"outline"}
                   onClick={() =>
                     setProduct({
@@ -508,7 +632,9 @@ const AddProduct = () => {
                   Add Product Variant
                 </Button>
                 <Button
-                  isDisabled={product.variants.length == 0}
+                  isDisabled={
+                    product.variants.length == 0 || ["VIEW_ONLY"].includes(mode)
+                  }
                   variant={"outline"}
                   onClick={() =>
                     setProduct({
@@ -523,6 +649,7 @@ const AddProduct = () => {
               </Box>
 
               <Button
+                isDisabled={["VIEW_ONLY"].includes(mode)}
                 fontSize="sm"
                 variant="outline"
                 fontWeight="500"

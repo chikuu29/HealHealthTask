@@ -17,11 +17,13 @@ Including another URLconf
 # from django.contrib import admin
 from django.urls import path,include
 from db.mongo import db
+from .view import LogFileView
 # from Apis import admin
 
 # from Apis.jobResumeView import *
 
 urlpatterns = [
+    path('api/logs/', LogFileView.as_view(), name='log-file-view'),
 #   path('admin/', admin.site.urls),
     path('auth/',include('auth.urls')),
     # path('app/',include('my_app.urls',namespace='my_app'))

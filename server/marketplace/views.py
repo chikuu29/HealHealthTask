@@ -47,7 +47,10 @@ class ProductView(APIView):
             collection = db['products']
         
             # Fetch all products from the 'products' collection
-            products = collection.find({})
+            products = collection.find({ "$or": [
+                { "isTrash": { "$exists": False } },
+                { "isTrash": False }
+            ]})
             products = list(products)
             
             # Convert ObjectId to string for JSON serialization
@@ -124,19 +127,61 @@ class ProductView(APIView):
                 "errors": serializer.errors
             }
             return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+   
 class ProductDetailBySKU(APIView):
  
 
     def get(self, request, sku):
         print('GET Product By sku', sku)
         products_collection = db['products'] # Get the collection from settings
-        product = products_collection.find_one({"sku": sku}, {"_id": 0})  # Exclude MongoDB's _id field
+        product = products_collection.find_one(
+        {
+            "sku": sku,
+            "$or": [
+                { "isTrash": { "$exists": False } },
+                { "isTrash": False }
+            ]
+        }, {"_id": 0})  # Exclude MongoDB's _id field
         if product:
             response_data = {
                 "success": True,
                 "result": product
             }
             return Response(response_data, status=status.HTTP_200_OK)
+        else:
+            response_data = {
+                "success": False,
+                "message": "Product not found"
+            }
+            return Response(response_data, status=status.HTTP_404_NOT_FOUND)
+        
+    def delete(self, request, sku):
+        print('DELETE Product By sku', sku)
+        products_collection = db['products']  # Get the collection from settings
+
+        # Find the product to check if it exists
+        product = products_collection.find_one({"sku": sku})
+
+        if product:
+            # Update the product's 'isTrash' field to True instead of deleting
+            result = products_collection.update_one(
+                {"sku": sku},               # The product identifier
+                {"$set": {"isTrash": True}}  # Soft delete by marking isTrash as True
+            )
+            
+            # Check if the update was successful
+            if result.modified_count > 0:
+                response_data = {
+                    "success": True,
+                    "message": "Product marked as trashed"
+                }
+                return Response(response_data, status=status.HTTP_200_OK)
+            else:
+                response_data = {
+                    "success": False,
+                    "message": "Failed to mark the product as trashed"
+                }
+                return Response(response_data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             response_data = {
                 "success": False,

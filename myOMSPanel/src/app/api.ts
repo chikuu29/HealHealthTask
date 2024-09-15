@@ -155,7 +155,59 @@ const POSTAPI = ({
 };
 
 
-export { GETAPI, POSTAPI }
+/**
+ * DELETEAPI({
+ *   path: '/users/123',
+ *   isPrivateApi: true,
+ *   enableCache: true,
+ *   cacheTTL: 600
+ * });
+ * 
+ * @returns An observable that emits a success or error response.
+ * 
+ * @author Suryanarayan Biswal
+ * @since 25-08-2024
+ */
+
+const DELETEAPI = ({
+    path,
+    isPrivateApi = false,          // Default to using public API
+    enableCache = false,      // Default to false
+    cacheTTL = 300            // Default to 300 seconds (adjustable based on use case)
+}: DELETEAPI_INTERFACE) => {
+    // Select the appropriate API handler (private or public)
+    const apiHandler = isPrivateApi ? privateAPI : publicAPI;
+
+    // Perform the DELETE request and handle response
+    return from(
+        apiHandler.delete(path).then(response => response.data) // Execute the DELETE request
+    ).pipe(
+        // Handle the success case by transforming the response
+        // map(data => ({ success: true, data })),
+        
+        // Catch and handle errors
+        catchError(error => {
+            const statusCode = error.response?.status as number;  // Get the error status code
+            const message = errorMessages[statusCode] || 'An unknown error occurred'; // Custom error message
+            return of({
+                success: false,
+                message: message || 'An unknown error occurred',
+                errorInfo: error  // Include error info for debugging purposes
+            });
+        })
+    );
+};
+
+interface DELETEAPI_INTERFACE {
+    path: string;
+    data?: any;
+    isPrivateApi?: boolean;
+    enableCache?: boolean;
+    cacheTTL?: number;
+}
+
+
+export { GETAPI, POSTAPI,DELETEAPI }
 
 
 

@@ -4,6 +4,23 @@
     "config": {
         "appList": [
             {
+                "id": "APP_API_LOGS",
+                "hidden": true,
+                "name": "API LOGS",
+                "target": "/logs",
+                "actions": {
+                    "onClick": ""
+                },
+                "logo": {
+                    "url": "../assets/icons/icons8-log-96.png",
+                    "style": {
+                        "mb": "4px",
+                        "boxSize": "150px",
+                        "objectFit": "contain"
+                    }
+                }
+            },
+            {
                 "id": "INVENTORY",
                 "hidden": true,
                 "name": "MY INVENTORY",
@@ -63,6 +80,7 @@
                             {
                                 "label": "Add Product",
                                 "icon": "FiShoppingCart",
+                                "target":"_blank",
                                 "path": "/inventory/addProduct"
                             }
                         ]

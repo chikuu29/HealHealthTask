@@ -13,15 +13,13 @@ import { MyApps } from "./views/myApps/MyApps";
 import AddProduct from "./views/inventory/AddProduct";
 import ProductListing from "./views/inventory/ProductListing";
 import MarketPlace from "./views/marketplcae/MarketPlace";
+import DateFilter from "./views/appLogs/DateFilter";
 // import {AddProduct}  from "./views/inventory/addProduct";
-
-
-
 
 const routes: RouteObject[] = [
   {
-    path:"/",
-    element:<Navigate to="myApps" replace />
+    path: "/",
+    element: <Navigate to="myApps" replace />,
   },
   {
     path: "/auth",
@@ -57,7 +55,7 @@ const routes: RouteObject[] = [
       {
         path: "",
         element: <MarketPlace />,
-      }
+      },
     ],
   },
   {
@@ -77,8 +75,12 @@ const routes: RouteObject[] = [
         element: <AddProduct />,
       },
       {
-        path:"product/edit/:sku",
-        element:<AddProduct />
+        path: "product/edit/:sku",
+        element: <AddProduct />,
+      },
+      {
+        path: "product/view/:sku",
+        element: <AddProduct />,
       },
       {
         path: "pageNotFound",
@@ -88,21 +90,34 @@ const routes: RouteObject[] = [
         path: "*",
         element: <Navigate to="pageNotFound" replace />,
       },
-
     ],
   },
   {
     path: "/myApps",
     element: (
       <AuthProvider>
-        <PrivateRoute children={<PanelLayout/>}></PrivateRoute>
+        <PrivateRoute children={<PanelLayout />}></PrivateRoute>
       </AuthProvider>
     ),
     children: [
       {
         path: "",
         element: <MyApps />,
-      }
+      },
+    ],
+  },
+  {
+    path: "/logs",
+    element: (
+      <AuthProvider>
+        <PrivateRoute children={<PanelLayout />}></PrivateRoute>
+      </AuthProvider>
+    ),
+    children: [
+      {
+        path: "",
+        element: <DateFilter />,
+      },
     ],
   },
   {

@@ -16,11 +16,12 @@ import {
   VStack,
   Heading,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import ProductView from "./ProductView";
 import { ViewIcon, EditIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
-import { GETAPI } from "../../app/api";
+import { DELETEAPI, GETAPI } from "../../app/api";
 import { FaDeleteLeft } from "react-icons/fa6";
 import { MdDelete } from "react-icons/md";
 
@@ -338,6 +339,7 @@ import { MdDelete } from "react-icons/md";
 // ];
 
 const ProductListing = () => {
+  const toast = useToast();
   const [isTableView, setIsTableView] = useState(true);
   const [isSticky, setIsSticky] = useState(false);
   const headerRef = useRef(null);
@@ -360,7 +362,7 @@ const ProductListing = () => {
       GETAPI({
         path: "marketplace/products",
         isPrivateApi: true,
-        enableCache: true,
+        enableCache: false,
         cacheTTL: 300,
       }).subscribe(
         (res) => {
@@ -383,6 +385,36 @@ const ProductListing = () => {
     };
     fetchProduct();
   }, []);
+
+  const deleteProduct = (e: any, sku: string) => {
+    e.preventDefault();
+    console.log("delete SKU", sku);
+    DELETEAPI({
+      path: `marketplace/product/${sku}`,
+    }).subscribe((res: any) => {
+      console.log("res", res);
+
+      if (res.success) {
+        toast({
+          title: "Product Deleted Successfull!",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "top", // This will position the toast at the top of the screen
+        });
+        setProducts(products.filter((product) => product.sku !== sku));
+      } else {
+        toast({
+          title: "Somethings Went Wroung",
+          description: res.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top", // This will position the toast at the top of the screen
+        });
+      }
+    });
+  };
   let bg = useColorModeValue("white", "navy.800");
   return (
     <Box p={4}>
@@ -498,6 +530,8 @@ const ProductListing = () => {
                           size="md"
                           mr={2}
                           leftIcon={<ViewIcon />}
+                          as={Link}
+                          to={`product/view/${product.sku}`}
                         >
                           View
                         </Button>
@@ -518,6 +552,9 @@ const ProductListing = () => {
                           colorScheme="red"
                           mr={2}
                           leftIcon={<MdDelete />}
+                          onClick={(e) => {
+                            deleteProduct(e, product.sku);
+                          }}
                         >
                           Delete
                         </Button>
@@ -543,3 +580,12 @@ const ProductListing = () => {
 };
 
 export default ProductListing;
+function toast(arg0: {
+  title: string;
+  description: any;
+  status: string;
+  duration: number;
+  isClosable: boolean;
+}) {
+  throw new Error("Function not implemented.");
+}

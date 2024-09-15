@@ -10,12 +10,95 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from datetime import datetime
+import os
 from pathlib import Path
 # Import CORS settings
 from corsheaders.defaults import default_headers
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Ensure 'logs' directory exists
+LOGS_DIR = BASE_DIR / 'static' / 'logs'
+LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
+# import os
+# import logging
+base_filename = os.path.join(LOGS_DIR, f"{datetime.now().strftime('%d-%m-%Y')}_api.log")
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'daily_rotating_file': {
+            'level': 'DEBUG',
+            'class': 'server.custom_logging.DailyDateRotatingFileHandler',
+            'base_filename': base_filename,
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 30,  # Keep 30 days of logs
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['daily_rotating_file'],
+            'level': 'WARNING',  # Adjust this as needed
+            'propagate': False,
+        },
+        'api_logger': {
+            'handlers': ['daily_rotating_file'],
+            'level': 'INFO',  # Adjust this as needed
+            'propagate': False,
+        },
+        # Suppress specific internal logs
+        'django.request': {
+            'handlers': ['daily_rotating_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['daily_rotating_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}
+
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'api_logs.log'),
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#         'api_logger': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': False,
+#         },
+#     },
+# }
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -70,7 +153,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'middleware.customMiddleware.UserValidationMiddleware'
+    'middleware.customMiddleware.UserValidationMiddleware',
+    'middleware.loggerMiddleware.APILoggingMiddleware'
+  
   
 ]
 

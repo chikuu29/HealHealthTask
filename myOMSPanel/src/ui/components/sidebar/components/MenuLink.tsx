@@ -25,6 +25,7 @@ interface Menu {
   label: string;
   icon: any;
   path: string;
+  target?:string,
   actions?: actions;
   component: any;
 }
@@ -98,55 +99,23 @@ export default function MenuLink(props: MenuLinkInterFace) {
   );
 
   return menuConfig.path ? (
-    <Link to={menuConfig.path} style={{ width: "100%" }}>
-      {content}
-    </Link>
+    menuConfig.target && menuConfig.target !== '' ? (
+      <a
+        href={menuConfig.path}
+        style={{ width: "100%" }}
+        target={menuConfig.target}
+        rel="noopener noreferrer" // Security recommendation
+      >
+        {content}
+      </a>
+    ) : (
+      <Link to={menuConfig.path} style={{ width: "100%" }}>
+        {content}
+      </Link>
+    )
   ) : (
     <div style={{ width: "100%" }} onClick={handleClick}>
       {content}
     </div>
   );
-
-  // return (
-  //   <Link to={menuConfig.path} style={{ width: "100%" }} >
-  //     {showFullSideBarMenu ? (
-  //       <HStack
-  //         align="center"
-  //         cursor={"pointer"}
-  //         w="full"
-  //         p={2}
-  //         borderRadius="md"
-  //         _hover={{
-  //           bg: mode("secondaryGray.400", "whiteAlpha.200")({ colorMode }),
-  //         }}
-  //       >
-  //         <Box as={DynamicIcon(menuConfig.icon)} size="24px" />
-  //         <Text fontSize="0.8rem" fontWeight={"600"} isTruncated w="full">
-  //           {menuConfig.label}
-  //         </Text>
-  //       </HStack>
-  //     ) : (
-  //       <VStack
-  //         align="center"
-  //         cursor={"pointer"}
-  //         w="full"
-  //         p={2}
-  //         borderRadius="md"
-  //         _hover={{
-  //           bg: mode("secondaryGray.400", "whiteAlpha.200")({ colorMode }),
-  //         }}
-  //       >
-  //         <Box as={DynamicIcon(menuConfig.icon)} size="24px" />
-  //         <Text
-  //           fontSize="0.5rem"
-  //           fontWeight={"600"}
-  //           textAlign="center"
-  //           whiteSpace="normal"
-  //         >
-  //           {menuConfig.label}
-  //         </Text>
-  //       </VStack>
-  //     )}
-  //   </Link>
-  // );
-}
+};
