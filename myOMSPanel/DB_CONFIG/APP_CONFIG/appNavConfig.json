@@ -47,7 +47,7 @@
                     {
                         "label": "Home",
                         "icon": "FcHome",
-                        "path": "/listing",
+                        "path": "/myApps",
                         "isMaster": true
                     },
                     {
@@ -58,17 +58,12 @@
                             {
                                 "label": "List Product",
                                 "icon": "FcTodoList",
-                                "path": ""
+                                "path": "/inventory"
                             },
                             {
                                 "label": "Add Product",
                                 "icon": "FiShoppingCart",
                                 "path": "/inventory/addProduct"
-                            },
-                            {
-                                "label": "Draft Product",
-                                "icon": "FiEdit",
-                                "path": "/draftProduct"
                             }
                         ]
                     }

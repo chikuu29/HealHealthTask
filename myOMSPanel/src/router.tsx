@@ -10,25 +10,15 @@ import DashBoard from "./views/dashboard/DashBoard";
 import PrivateRoute from "./auth/PrivateRoute";
 import { AuthProvider } from "./auth/AuthProvider";
 import { MyApps } from "./views/myApps/MyApps";
-import AddProduct  from "./views/inventory/addProduct";
+import AddProduct from "./views/inventory/AddProduct";
+import ProductListing from "./views/inventory/ProductListing";
+import MarketPlace from "./views/marketplcae/MarketPlace";
+// import {AddProduct}  from "./views/inventory/addProduct";
+
 
 
 
 const routes: RouteObject[] = [
-  // {
-  //   path: "/",
-  //   element: <LandingLayout />,
-  //   children: [
-  //     {
-  //       path: "",
-  //       element: <Home />,
-  //     },
-  //     {
-  //       path: "pageNotFound",
-  //       element: <NoPageFound />,
-  //     },
-  //   ],
-  // },
   {
     path:"/",
     element:<Navigate to="myApps" replace />
@@ -66,16 +56,8 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "",
-        element: <DashBoard />,
-      },
-      {
-        path: "pageNotFound",
-        element: <NoPageFound />,
-      },
-      {
-        path: "*",
-        element: <Navigate to="pageNotFound" replace />,
-      },
+        element: <MarketPlace />,
+      }
     ],
   },
   {
@@ -88,12 +70,25 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "",
-        element: <MyApps />,
+        element: <ProductListing />,
       },
       {
         path: "addProduct",
         element: <AddProduct />,
-      }
+      },
+      {
+        path:"product/edit/:sku",
+        element:<AddProduct />
+      },
+      {
+        path: "pageNotFound",
+        element: <NoPageFound />,
+      },
+      {
+        path: "*",
+        element: <Navigate to="pageNotFound" replace />,
+      },
+
     ],
   },
   {
@@ -110,7 +105,6 @@ const routes: RouteObject[] = [
       }
     ],
   },
-
   {
     path: "*",
     element: <Navigate to="/pageNotFound" replace />,

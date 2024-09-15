@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import ProductView,AddVariantView
+from .views import ProductView,ProductDetailBySKU
 
 urlpatterns = [
+
     path('products', ProductView.as_view(), name='product_list'),
-    path('products/<str:product_id>/variants/', AddVariantView.as_view(), name='add-variant'),
+    path('product/<str:sku>', ProductDetailBySKU.as_view(), name='get_product_bysku'),
 ]

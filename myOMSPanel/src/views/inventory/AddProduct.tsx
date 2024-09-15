@@ -32,23 +32,63 @@ import {
   Icon,
   Stack,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as dynamicFunctions from "../../script/myAppsScript";
 
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import ErrorComponent from "../../ui/components/Error/ErrorComponent";
 import Loader from "../../ui/components/Loader/Loader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddIcon, CheckIcon } from "@chakra-ui/icons";
 import ProductView from "./ProductView";
 import { FaCartPlus, FaEye } from "react-icons/fa";
 import React from "react";
 import { BiSave } from "react-icons/bi";
-import { POSTAPI } from "../../app/api";
-import { startLoading, stopLoading } from "../../app/slices/loader/appLoaderSlice";
+import { GETAPI, POSTAPI } from "../../app/api";
+import {
+  startLoading,
+  stopLoading,
+} from "../../app/slices/loader/appLoaderSlice";
+import { MdDelete } from "react-icons/md";
 
 const AddProduct = () => {
+  const { sku } = useParams();
+  useEffect(() => {
+    const fetchProduct = () => {
+      GETAPI({
+        path: "marketplace/product/" + sku,
+        isPrivateApi: true,
+        enableCache: true,
+        cacheTTL: 300,
+      }).subscribe(
+        (res) => {
+          console.log(res);
+
+          if (res.success) {
+            setProduct(res.result); // Assuming `result` contains the product object
+            setMode("EDIT");
+          } else {
+            setMode("NEW");
+            // setError('Product not found');
+          }
+
+          // setLoading(false); // Stop the loading indicator after response
+        },
+        (err) => {
+          setMode("NEW");
+          console.error(err);
+          // setError('Error fetching product');
+          // setLoading(false);
+        }
+      );
+    };
+
+    fetchProduct();
+  }, [sku]);
+
+  const [mode, setMode] = useState<"EDIT" | "NEW">("NEW");
+
   // Initialize the state with the correct structure
   const [product, setProduct] = useState<Product>({
     sku: "",
@@ -59,6 +99,7 @@ const AddProduct = () => {
     special_price: 0,
     variants: [],
   });
+
   const defualtVariant: ProductVariant = {
     sku: "",
     name: "",
@@ -77,7 +118,10 @@ const AddProduct = () => {
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
-    const parsedValue = name === 'price' || name === 'special_price' ? parseFloat(value) || 0 : value;
+    const parsedValue =
+      name === "price" || name === "special_price"
+        ? parseFloat(value) || 0
+        : value;
     setProduct({ ...product, [name]: parsedValue });
   };
 
@@ -87,7 +131,10 @@ const AddProduct = () => {
     imgIndex?: number
   ) => {
     const { name, value } = e.target;
-    const parsedValue = name === 'price' || name === 'special_price' ? parseFloat(value) || 0 : value;
+    const parsedValue =
+      name === "price" || name === "special_price"
+        ? parseFloat(value) || 0
+        : value;
     // setVariant({ ...variant, [name]: value });
     if (["color", "size"].includes(name)) {
       const updatedVariants = [...product.variants];
@@ -105,77 +152,72 @@ const AddProduct = () => {
       setProduct({ ...product, variants: updatedVariants });
     }
   };
-
-  // const handleAttributesChange = (e: any) => {
-  //   const { name, value } = e.target;
-  //   setVariant({
-  //     ...variant,
-  //     attributes: { ...variant.attributes, [name]: value },
-  //   });
-  // };
-
   const handleSubmit = (e: any) => {
     e.preventDefault();
     // Add your submit logic here, e.g., sending data to the server
-   
 
-   product.variants.map((i:ProductVariant)=>{
-     i.sku=generateSKU(product.sku,i.attributes.color,i.attributes.size)
-     i.name=product.name +' - '+i.attributes.color+ ', Size '+i.attributes.size
-   })
-   console.log("Product Data:", product);
-   dispatch(startLoading('Your Order Is Creating, please wait...'))
+    product.variants.map((i: ProductVariant) => {
+      i.sku = generateSKU(product.sku, i.attributes.color, i.attributes.size);
+      i.name =
+        product.name +
+        " - " +
+        i.attributes.color +
+        ", Size " +
+        i.attributes.size;
+    });
+    console.log("Product Data:", product);
+    dispatch(startLoading("Your Order Is Creating, please wait..."));
 
-   POSTAPI({
-    path:'marketplace/products',
-    data:product,
-    isPrivateApi:true,
-    enableCache:false,
-  }).subscribe((res:any)=>{
-    dispatch(stopLoading())
-    if(res.success){
-      setProduct({
-        sku: "",
-        name: "",
-        description: "",
-        image: "",
-        price: 0,
-        special_price: 0,
-        variants: [],
-      });
-      toast({
-        title: "Product added.",
-        description: "The product has been added successfully.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    }else{
-      toast({
-        title: "Product added.",
-        description: "The product has been added successfully.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-    console.log("res");
-    
-  })
-  
-  
+    POSTAPI({
+      path: "marketplace/products",
+      data: product,
+      isPrivateApi: true,
+      enableCache: false,
+    }).subscribe((res: any) => {
+      dispatch(stopLoading());
+      if (res.success) {
+        if (!res.message.includes("updated")) {
+          setProduct({
+            sku: "",
+            name: "",
+            description: "",
+            image: "",
+            price: 0,
+            special_price: 0,
+            variants: [],
+          });
+        }
+        toast({
+          title: res.message,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          // position: "top" // This will position the toast at the top of the screen
+        });
+      } else {
+        toast({
+          title: res.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          // position: "top" // This will position the toast at the top of the screen
+        });
+      }
+      console.log("res");
+    });
   };
-
 
   return (
     <Box margin={"auto"}>
       {/* Header */}
       <Box margin={"auto"} boxShadow="md" p={2}>
         <Heading as="h1" size="xl" textAlign="center" mb={4}>
-          Listing Your Products
+          EXITED YOU DOING {mode} PRODUCT
         </Heading>
         <Text fontSize="lg" textAlign="center">
-          Explore our latest products and choose your favorites.
+          Good Know That You Are Trying To{" "}
+          {mode.charAt(0).toUpperCase() + mode.slice(1).toLowerCase()} your
+          product
         </Text>
       </Box>
       <Grid
@@ -250,7 +292,7 @@ const AddProduct = () => {
                   variant={"main"}
                   type="number"
                   name="price"
-                  // value={product.price}
+                  value={product.price}
                   onChange={handleInputChange}
                   placeholder="Enter price"
                 />
@@ -263,7 +305,7 @@ const AddProduct = () => {
                   type="number"
                   name="special_price"
                   variant={"main"}
-                  // value={product.special_price}
+                  value={product.special_price}
                   onChange={handleInputChange}
                   placeholder="Enter special price"
                 />
@@ -276,7 +318,7 @@ const AddProduct = () => {
                   name="image"
                   color={"lightblue"}
                   variant="main"
-                  // value={mainImage}
+                  value={product.image}
                   onChange={handleInputChange}
                   placeholder="Enter main image URL"
                 />
@@ -329,11 +371,17 @@ const AddProduct = () => {
                         <FormControl>
                           <FormLabel>Product Name</FormLabel>
                           <Input
-                          disabled
+                            disabled
                             required={true}
                             name="name"
                             variant={"main"}
-                            value={product.name +' - '+variant.attributes.color+ ', Size '+variant.attributes.size}
+                            value={
+                              product.name +
+                              " - " +
+                              variant.attributes.color +
+                              ", Size " +
+                              variant.attributes.size
+                            }
                             onChange={(e) =>
                               handleVariantChange(e, variantIndex)
                             }
@@ -459,6 +507,19 @@ const AddProduct = () => {
                 >
                   Add Product Variant
                 </Button>
+                <Button
+                  isDisabled={product.variants.length == 0}
+                  variant={"outline"}
+                  onClick={() =>
+                    setProduct({
+                      ...product,
+                      variants: product.variants.slice(0, -1), // Removes the last variant
+                    })
+                  }
+                  leftIcon={<MdDelete />} // You can use any icon or remove this if unnecessary
+                >
+                  Remove Product Variant
+                </Button>
               </Box>
 
               <Button
@@ -514,7 +575,7 @@ const generateSKU = (baseSKU: string, color: string, size: string) => {
   const colorCode: any = {
     Red: "RED",
     Blue: "BLUE",
-    Yellow:"YELLOW"
+    Yellow: "YELLOW",
     // Add more color mappings as needed
   };
 

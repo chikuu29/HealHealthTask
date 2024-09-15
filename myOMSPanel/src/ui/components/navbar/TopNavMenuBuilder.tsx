@@ -9,6 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Stack,
+  HStack,
 } from "@chakra-ui/react";
 import { APP_CONFIG_STATE } from "../../../types/appConfigInterface";
 import { RootState } from "../../../app/store";
@@ -16,6 +17,7 @@ import { mode } from "@chakra-ui/theme-tools";
 import DynamicIcon from "../../../utils/app/renderDynamicIcons";
 import MenuLink from "../sidebar/components/MenuLink";
 import React from "react";
+import { Link } from "react-router-dom";
 
 interface TopNavPropsType {
   FEATURE_LIST: any[];
@@ -87,47 +89,57 @@ const NavItem = ({ menuConfig, ...rest }: MenuLinkInterFace) => {
       //   bg: "cyan.400",
       //   color: "white",
       // }}
-      _hover={{
-        bg: mode("secondaryGray.400", "whiteAlpha.200")({ colorMode }),
-      }}
+      // _hover={{
+      //   bg: mode("secondaryGray.400", "whiteAlpha.200")({ colorMode }),
+      // }}
       {...rest}
     >
-      {menuConfig.icon && (
-        <Icon
-          mr="2"
-          fontSize="20"
-          as={DynamicIcon(menuConfig.icon)}
-          _groupHover={{
-            color: "white",
-          }}
-        />
-      )}
-
       {/* {menuConfig.menu && ( */}
       <Popover trigger={"hover"} placement={"bottom-start"}>
-        <PopoverTrigger>
-          <Text>{menuConfig.label}</Text>
-        </PopoverTrigger>
+        {menuConfig.menu && menuConfig.menu.length > 0 ? (
+          <>
+            <PopoverTrigger>
+              <HStack
+                align="center"
+                cursor="pointer"
+                w="full"
+                p={2}
+                borderRadius="md"
+                _hover={{
+                  bg: mode(
+                    "secondaryGray.400",
+                    "whiteAlpha.200"
+                  )({ colorMode }),
+                }}
+              >
+                <Box as={DynamicIcon(menuConfig.icon)} size="24px" />
+                <Text fontSize="0.8rem" fontWeight="600" isTruncated w="full">
+                  {menuConfig.label}
+                </Text>
+              </HStack>
+            </PopoverTrigger>
 
-        {menuConfig.menu && menuConfig.menu.length > 0 && (
-          <PopoverContent
-            border={0}
-            boxShadow={"xl"}
-            bg={navbarBg}
-            p={4}
-            rounded={"xl"}
-            minW={"sm"}
-          >
-            <Stack>
-              {menuConfig.menu.map((child: any, index: number) => (
-                // <DesktopSubNav key={child} subMenu={child} />
-                <React.Fragment key={index}>
-                  <MenuLink menuConfig={child} showFullSideBarMenu={true} />
-                </React.Fragment>
-                // <MenuLink</MenuLink>
-              ))}
-            </Stack>
-          </PopoverContent>
+            <PopoverContent
+              border={0}
+              boxShadow={"xl"}
+              bg={navbarBg}
+              p={4}
+              rounded={"xl"}
+              minW={"sm"}
+            >
+              <Stack>
+                {menuConfig.menu.map((child: any, index: number) => (
+                  // <DesktopSubNav key={child} subMenu={child} />
+                  <React.Fragment key={index}>
+                    <MenuLink menuConfig={child} showFullSideBarMenu={true} />
+                  </React.Fragment>
+                  // <MenuLink</MenuLink>
+                ))}
+              </Stack>
+            </PopoverContent>
+          </>
+        ) : (
+          <MenuLink menuConfig={menuConfig} showFullSideBarMenu={true} />
         )}
       </Popover>
       {/* )} */}
