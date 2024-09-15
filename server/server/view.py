@@ -52,7 +52,7 @@ class LogFileView(View):
         if not combined_logs:
             return JsonResponse({'error': 'No logs found for the specified path and date range.'}, status=404)
         # If logs are found, return them in a JSON response with success
-        print(f"combined_logs",combined_logs)
+        # print(f"combined_logs",combined_logs)
         return JsonResponse({
             'success': True,
             'logs': combined_logs  # Split logs into a list for better readability in JSON
@@ -65,9 +65,9 @@ class LogFileView(View):
 def convert_log_entry(log_entry):
     try:
     # Split the log entry by space to extract the parts
-        print("log_entry",log_entry)
+        # print("log_entry",log_entry)
         parts = log_entry.split(' ', 3)
-        print("parts",parts)
+        # print("parts",parts)
         
         # Extract the log type, time, and loggerMiddleware
         log_type = parts[0]

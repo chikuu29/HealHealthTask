@@ -11,7 +11,7 @@ const MarketPlace = () => {
       GETAPI({
         path: "marketplace/products",
         isPrivateApi: true,
-        enableCache: true,
+        enableCache: false,
         cacheTTL: 300,
       }).subscribe(
         (res) => {

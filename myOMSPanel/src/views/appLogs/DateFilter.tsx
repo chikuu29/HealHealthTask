@@ -233,7 +233,7 @@ const DateFilter: React.FC = () => {
                     boxShadow="sm"
                     _hover={{ boxShadow: "md", bg: "gray.100" }}
                   >
-                    <HStack spacing={4}>
+                    <HStack spacing={4} overflowX={'scroll'} width="100%">
                       <Icon as={FaFileAlt} color="blue.500" boxSize={6} />
                       <Box flex="1">
                         <Text
@@ -306,6 +306,7 @@ const DateFilter: React.FC = () => {
                           </Text>
                           <Box
                             mt={1}
+
                             maxHeight="200px" // Adjust as needed
                             overflowY="auto"
                             borderWidth="1px"
@@ -316,9 +317,11 @@ const DateFilter: React.FC = () => {
                             <Text
                               fontSize="sm"
                               color="gray.800"
-                              whiteSpace="pre-wrap"
+                              // whiteSpace="pre-wrap"
+                              whiteSpace="wrap"
+                              
                             >
-                              {JSON.stringify(log.log.response, null, 2)}
+                              {JSON.stringify(log.log.response.body, null, 2)}
                             </Text>
                           </Box>
                         </Box>
