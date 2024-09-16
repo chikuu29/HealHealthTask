@@ -295,8 +295,11 @@ const AddProduct = () => {
         isPrivateApi: true,
         enableCache: false,
       }).subscribe((res: any) => {
+        console.log(res);
+        
         dispatch(stopLoading());
         if (res.success) {
+
           if (!res.message.includes("updated")) {
             setProduct({
               sku: "",
@@ -317,7 +320,7 @@ const AddProduct = () => {
           });
         } else {
           toast({
-            title: res.message,
+            title: res.errorInfo.response.data.message || res.message,
             status: "error",
             duration: 5000,
             isClosable: true,

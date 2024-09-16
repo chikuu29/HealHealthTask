@@ -86,7 +86,7 @@ class LoginAPIView(APIView):
                     'success': True,
                     "login_info": {
                         'userFullName': storedData['userName'],
-                        'role':"ADMIN",
+                        'role':storedData['role'],
                         'email': storedData['email'],
                         'phone': storedData['phone'],
                         'firstName': storedData['firstName'],
@@ -106,7 +106,7 @@ class LoginAPIView(APIView):
                         )
                     response.set_cookie(
                             key='role',
-                            value=str("ADMIN"),
+                            value=str(storedData['role']),
                             samesite= 'None',
                             httponly=True,
                             secure=True,
@@ -145,7 +145,7 @@ class checkLoginStatus(APIView):
                     'success': True,
                     "login_info": {
                         'userFullName': storedData['userName'],
-                        'role':"ADMIN",
+                        'role':storedData['role'],
                         'email': storedData['email'],
                         'phone': storedData['phone'],
                         'firstName': storedData['firstName'],

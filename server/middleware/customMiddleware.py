@@ -9,19 +9,19 @@ class UserValidationMiddleware:
     def __call__(self, request):
         # Check if the request path includes 'auth'
         if 'auth' not in request.path:
-            print("UserValidationMiddleware")
+            # print("UserValidationMiddleware")
             # Check if Authorization header is present
             # if 'Authorization' not in request.headers:
             #     return JsonResponse({"error": "Authorization header missing"}, status=status.HTTP_401_UNAUTHORIZED)
 
             # Access cookies using request.COOKIES
             if 'jwt_token' in request.COOKIES:
-                print(f"hii",request.COOKIES['jwt_token'])
+                # print(f"hii",request.COOKIES['jwt_token'])
                 token = request.COOKIES['jwt_token']
 
                 try:
                     payload = jwt.decode(token, 'your_secret_key', algorithms=['HS256'])
-                    print('hii',payload)
+                    # print('hii',payload)
                     # user_role = payload.get('role')
 
                     # Check user's role
