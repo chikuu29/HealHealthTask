@@ -14,9 +14,11 @@ class RegisterAPIView(APIView):
         # Get data from request
             email = request.data.get('email')
             password = request.data.get('password')
+            fname = request.data.get('fname')
+            lname = request.data.get('lname')
             # confirm_password = request.data.get('confirmPswd')
-            role = request.data.get('role')
-            if(not email or not password or not role):
+            # role = request.data.get('role')
+            if(not email or not password or not fname or not lname):
                 return Response({"message": "Please fill in all fields","success":False}, status=status.HTTP_400_BAD_REQUEST)
 
             # Check if passwords match
@@ -34,8 +36,12 @@ class RegisterAPIView(APIView):
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             user_data = {
                 "email": email,
+                'userName': fname + lname,
+                'firstName':fname,
+                'lastName':lname,
+                'phone':'',
                 "password": hashed_password.decode('utf-8') ,
-                 "role":role # In practice, you should hash the password
+                 "role":"SELLER" # In practice, you should hash the password
             }
             inserted_id = collection.insert_one(user_data).inserted_id
 

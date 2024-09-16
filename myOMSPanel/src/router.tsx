@@ -3,6 +3,7 @@ import { Navigate, createBrowserRouter, RouteObject } from "react-router-dom";
 import AuthLayout from "./ui/layouts/auth/auth";
 import LandingLayout from "./ui/layouts/landing/landing";
 import SignInPage from "./views/auth/signin";
+import SignUpPage from "./views/auth/signup";
 import PanelLayout from "./ui/layouts/dashboard/dash";
 import { Home } from "./pages/Home/Home";
 import { NoPageFound } from "./pages/NoPageFound";
@@ -39,8 +40,8 @@ const routes: RouteObject[] = [
         element: <SignInPage />,
       },
       {
-        path: "getstarted",
-        element: <SignInPage />,
+        path: "sign-up",
+        element: <SignUpPage />,
       },
     ],
   },
