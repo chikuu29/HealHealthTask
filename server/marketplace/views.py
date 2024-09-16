@@ -44,37 +44,48 @@ class ProductView(APIView):
     def get(self, request):
         try:
             # Access MongoDB collection
-            collection = db['products']
-        
-            # Fetch all products from the 'products' collection
-            products = collection.find({ "$or": [
-                { "isTrash": { "$exists": False } },
-                { "isTrash": False }
-            ]})
-            products = list(products)
-            
-            # Convert ObjectId to string for JSON serialization
-            for product in products:
-                product['_id'] = str(product['_id'])
-                # Convert nested ObjectId for variants
-                # if 'variants' in product:
-                #     for variant in product['variants']:
-                #         variant['_id'] = str(variant['_id'])
-            
-            # Serialize the data
-            serializer = ProductSerializer(products, many=True)
-            
-            if products:
-                response = {
-                    "success": True,
-                    "result": serializer.data
-                }
-                return Response(response, status=status.HTTP_200_OK)
+            authInfo= request.authInfo if hasattr(request, 'authInfo') else 'Not Provided'
+      
+            if(authInfo != 'Not Provided' and 'payload' in authInfo):
+                collection = db['products']
+                productOwnBy=authInfo['payload'].get('email','Email not provided')
+                # Fetch all products from the 'products' collection
+                products = collection.find({
+                    'ownBY':productOwnBy,
+                     "$or": [
+                    { "isTrash": { "$exists": False } },
+                    { "isTrash": False }
+                ]})
+                products = list(products)
+                
+                # Convert ObjectId to string for JSON serialization
+                for product in products:
+                    product['_id'] = str(product['_id'])
+                    # Convert nested ObjectId for variants
+                    # if 'variants' in product:
+                    #     for variant in product['variants']:
+                    #         variant['_id'] = str(variant['_id'])
+                
+                # Serialize the data
+                # serializer = ProductSerializer(products, many=True)
+                
+                if products:
+                    response = {
+                        "success": True,
+                        "result": products
+                    }
+                    return Response(response, status=status.HTTP_200_OK)
+                else:
+                    return Response({
+                        "success": False,
+                        "result": []
+                    }, status=status.HTTP_200_OK)
             else:
-                return Response({
-                    "success": False,
-                    "result": []
-                }, status=status.HTTP_200_OK)
+                response_data = {
+                        "success": False,
+                        "message": "Unautorized Access"
+                }
+                return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"message": f"An error occurred: {str(e)}", "success": False}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -215,3 +226,43 @@ class ProductDetailBySKU(APIView):
                 "message": "Product not found"
             }
             return Response(response_data, status=status.HTTP_404_NOT_FOUND)
+
+
+    
+class MarketPlace(APIView):
+    def get(self, request):
+        try:
+            # Access MongoDB collection
+            collection = db['products']
+        
+            # Fetch all products from the 'products' collection
+            products = collection.find({ "$or": [
+                { "isTrash": { "$exists": False } },
+                { "isTrash": False }
+            ]})
+            products = list(products)
+            
+            # Convert ObjectId to string for JSON serialization
+            for product in products:
+                product['_id'] = str(product['_id'])
+                # Convert nested ObjectId for variants
+                # if 'variants' in product:
+                #     for variant in product['variants']:
+                #         variant['_id'] = str(variant['_id'])
+            
+            # Serialize the data
+            serializer = ProductSerializer(products, many=True)
+            
+            if products:
+                response = {
+                    "success": True,
+                    "result": serializer.data
+                }
+                return Response(response, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    "success": False,
+                    "result": []
+                }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message": f"An error occurred: {str(e)}", "success": False}, status=status.HTTP_400_BAD_REQUEST)

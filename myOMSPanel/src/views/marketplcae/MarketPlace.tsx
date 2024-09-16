@@ -9,7 +9,7 @@ const MarketPlace = () => {
   useEffect(() => {
     const fetchProduct = () => {
       GETAPI({
-        path: "marketplace/products",
+        path: "marketplace/getAllProducts",
         isPrivateApi: true,
         enableCache: false,
         cacheTTL: 300,

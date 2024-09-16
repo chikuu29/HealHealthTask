@@ -504,8 +504,10 @@ const ProductListing = () => {
                     <Th>Image</Th>
                     <Th>SKU</Th>
                     <Th>Total Variants</Th>
+                   
                     <Th>Name</Th>
                     <Th>Price</Th>
+                    <Th>Creaeted By </Th>
                     <Th>Actions</Th>
                   </Tr>
                 </Thead>
@@ -523,6 +525,7 @@ const ProductListing = () => {
                       <Td>{product.variants.length}</Td>
                       <Td>{product.name}</Td>
                       <Td>${product.price}</Td>
+                      <Td>{product?.ownBY}</Td>
                       <Td>
                         <Button
                           colorScheme="blue"

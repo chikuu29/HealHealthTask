@@ -20,4 +20,5 @@ interface Product {
     price: number;
     special_price: number;
     variants: ProductVariant[];
+    ownBY?:string
 }
